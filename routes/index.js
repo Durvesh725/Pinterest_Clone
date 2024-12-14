@@ -33,6 +33,14 @@ router.get("/show/posts", isLoggedIn, async (req, res, next) => {
   res.render("show", {user, nav: true}); 
 });
 
+router.get("/feed", isLoggedIn, async (req, res, next) => {
+  const user = await userModel.findOne({username: req.session.passport.user});
+  const posts = await postModel.find()
+  .populate("user");
+
+  res.render("feed", {nav: true, user, posts: posts});
+});
+
 router.get("/add", isLoggedIn, async (req, res, next) => {
   const user = await userModel.findOne({ username: req.session.passport.user });
   res.render("add", { user, nav: true });
@@ -78,6 +86,7 @@ router.post("/register", function (req, res, next) {
     username: req.body.username,
     email: req.body.email,
     contact: req.body.contact,
+    name: req.body.fullname
   });
 
   //authenticate user immediately after register
